@@ -6,110 +6,42 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Calculator</title>
 </head>
-<style>
-  body {
-  background-color: rgb(50, 169, 209);
-  user-select: none;
-  }
-  .container {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-gap: 5px;
-    background-color: #444444;
-    padding: 5px;
-    border-radius: 5px;
-    max-width: 360px;
-  }
-  .item {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 15px;
-    font-size: 24px;
-    background-color: #fff;
-    border-radius: 5px;
-    color: #000;
-    cursor: pointer;
-  }
-  .form {
-    max-width: 100%;
-  }
-  .input {
-    width: 100%;
-    height: 50px;
-    border: none;
-    font-size: 32px;
-    outline: none;
-    text-align: right;
-  }
-  .input-field {
-    grid-column: 1/-1;
-    padding: 0;
-  }
-  .clean {
-    grid-column: 1/3;
-    background-color: rgb(255, 102, 0);
-  }
-  .back {
-    grid-column: 3/-1;
-    background-color: rgb(255, 166, 0);
-  }
-  .equal {
-    grid-column: 4;
-    grid-row: 6/8;
-    background-color: rgb(255, 102, 0);
-  }
-  .point {
-    grid-column: 3;
-    grid-row: 7/8;
-  }
-  .zero {
-    grid-column: 1/3;
-    grid-row: 7/8;
-  }
-  .actions {
-    background-color: rgb(255, 166, 0);
-  }
-</style> 
+<link rel="stylesheet" href="style.css">
 <body>
-  <div class="container">
-    <div class="item input-field"><form class="form" name="form"><input class="input" type="text" name="textview" readonly></form></div>
-    <div class="item clean" onclick="clean()">C</div>
-    <div class="item back" onclick="back()">&larr;</div>
-    <div class="item actions" onclick="insert('+')">+</div>
-    <div class="item actions" onclick="insert('-')">-</div>
-    <div class="item actions" onclick="insert('*')">&times;</div>
-    <div class="item actions" onclick="insert('/')">&divide;</div>
-    <div class="item" onclick="insert('7')">7</div>
-    <div class="item" onclick="insert('8')">8</div>
-    <div class="item" onclick="insert('9')">9</div>
-    <div class="item actions" onclick="insert('(')">(</div>
-    <div class="item" onclick="insert('4')">4</div>
-    <div class="item" onclick="insert('5')">5</div>
-    <div class="item" onclick="insert('6')">6</div>
-    <div class="item actions" onclick="insert(')')">)</div>
-    <div class="item" onclick="insert('1')">1</div>
-    <div class="item" onclick="insert('2')">2</div>
-    <div class="item" onclick="insert('3')">3</div>
-    <div class="item equal" onclick="equal()">=</div>
-    <div class="item zero" onclick="insert('0')">0</div>
-    <div class="item point" onclick="insert('.')">.</div>
+<div class="calculator">
+
+  <input type="text" class="calculator-screen" value="0" disabled />
+  
+  <div class="calculator-keys">
+    
+    <button type="button" class="operator" value="+">+</button>
+    <button type="button" class="operator" value="-">-</button>
+    <button type="button" class="operator" value="*">&times;</button>
+    <button type="button" class="operator" value="/">&divide;</button>
+
+    <button type="button" value="7">7</button>
+    <button type="button" value="8">8</button>
+    <button type="button" value="9">9</button>
+
+
+    <button type="button" value="4">4</button>
+    <button type="button" value="5">5</button>
+    <button type="button" value="6">6</button>
+
+
+    <button type="button" value="1">1</button>
+    <button type="button" value="2">2</button>
+    <button type="button" value="3">3</button>
+
+
+    <button type="button" value="0">0</button>
+    <button type="button" class="decimal function" value=".">.</button>
+    <button type="button" class="all-clear function" value="all-clear">AC</button>
+
+    <button type="button" class="equal-sign operator" value="=">=</button>
+
   </div>
-  <script>
-    function insert(num) {
-      document.form.textview.value = 
-      document.form.textview.value + num;
-    }
-    function clean() {
-      document.form.textview.value = "";
-    }
-    function back() {
-      document.form.textview.value = 
-      document.form.textview.value.substring(0, document.form.textview.value.length - 1);
-    }
-    function equal() {
-      document.form.textview.value = eval(document.form.textview.value);
-    }
-  </script>
+</div>
+  <script src="index.js"></script>
 </body>
 </html>
