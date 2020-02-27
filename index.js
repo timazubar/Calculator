@@ -1,115 +1,96 @@
-  const calculator = {
-    displayValue: '0',
-    firstOperand: null,
-    waitingForSecondOperand: false,
-    operator: null,
-  };
+const calculator = {
+  displayValue: '0',
+  firstOperand: null,
+  waitingForSecondOperand: false,
+  operator: null,
 
-  function inputDigit(digit) {
-    const { displayValue, waitingForSecondOperand } = calculator;
+  inputDigit(digit) {
+    const { displayValue, waitingForSecondOperand } = this;
     if (waitingForSecondOperand === true) {
-      calculator.displayValue = digit;
-      calculator.waitingForSecondOperand = false;
+      this.displayValue = digit;
+      this.waitingForSecondOperand = false;
     }
     else {
-    calculator.displayValue = displayValue === '0' ? digit : displayValue + digit;
+      this.displayValue = displayValue === '0'
+        ? digit 
+        : displayValue + digit;
     }
-    console.log(calculator);
-  }
-
-  function inputDecimal(dot) {
-    if (calculator.waitingForSecondOperand === true) return;
-    if (!calculator.displayValue.includes(dot)) {
-      calculator.displayValue += dot;
+  },
+  inputDecimal(dot) {
+    if (this.waitingForSecondOperand === true) return;
+    if (!this.displayValue.includes(dot)) {
+      this.displayValue += dot;
     }
-  }
-
-  function handleOperator(nextOperator) {
-    const {firstOperand, displayValue, operator} = calculator;
+  },
+  handleOperator(nextOperator) {
+    const {firstOperand, displayValue, operator} = this;
     const inputValue = parseFloat(displayValue);
-
-    if (operator && calculator.waitingForSecondOperand) {
-      calculator.operator = nextOperator;
-      console.log(calculator);
+  
+    if (operator && this.waitingForSecondOperand) {
+      this.operator = nextOperator;
       return;
     }
-    
-    if (firstOperand == null) {
-      calculator.firstOperand = inputValue;
-    } 
-    else if (operator) {
-      const currentValue = firstOperand || 0;
-      const result = performCalculation[operator](firstOperand, inputValue);
       
-      calculator.displayValue = String(result);
-      calculator.firstOperand = result;
+    if (firstOperand == null) {
+      this.firstOperand = inputValue;
+    } else if (operator) {
+      const result = performCalculation[operator](firstOperand, inputValue);
+      this.displayValue = String(result);
+      this.firstOperand = result;
     }
-
-    calculator.waitingForSecondOperand = true;
-    calculator.operator = nextOperator;
-
-    console.log(calculator);
-  }
-
-  const performCalculation = {
-    '/': (firstOperand, secondOperand) => firstOperand / secondOperand,
-    '*': (firstOperand, secondOperand) => firstOperand * secondOperand,
-    '-': (firstOperand, secondOperand) => firstOperand - secondOperand,
-    '+': (firstOperand, secondOperand) => firstOperand + secondOperand,
-    '=': (firstOperand, secondOperand) => secondOperand
-  };
-
-  function resetCalculator() {
+  
+    this.waitingForSecondOperand = true;
+    this.operator = nextOperator;
+  },
+  resetCalculator() {
     calculator.displayValue = '0';
     calculator.firstOperand = null;
     calculator.waitingForSecondOperand = false;
     calculator.operator = null;
-    console.log(calculator);
-  }
-
-  function deleteValue() {
-    const input = document.querySelector('.calculator-screen');
-    input.value.substr(0,input.value.length-1);
-  }
-
-  function updateDisplay() {
+  },
+  updateDisplay() {
     const display = document.querySelector('.calculator-screen');
     display.value = calculator.displayValue;
+  },
+  deleteValue() {
+    const input = document.querySelector('.calculator-screen');
+    calculator.displayValue = input.value.slice(0,-1);
+  },
+  findSQRT() {
+    const input = document.querySelector('.calculator-screen');
+    calculator.displayValue = Math.sqrt(input.value);
+  },
+};
+
+const performCalculation = {
+  '/': (firstOperand, secondOperand) => firstOperand / secondOperand,
+  '*': (firstOperand, secondOperand) => firstOperand * secondOperand,
+  '-': (firstOperand, secondOperand) => firstOperand - secondOperand,
+  '+': (firstOperand, secondOperand) => firstOperand + secondOperand,
+  '=': (_, secondOperand) => secondOperand,
+  "^": (firstOperand, secondOperand) => Math.pow(firstOperand, secondOperand),
+  "sqrt": (firstOperand) => Math.sqrt(firstOperand),
+  "%": (firstOperand, secondOperand) => (firstOperand)/100 * secondOperand,
+}; 
+
+const keys = document.querySelector('.calculator-keys');
+keys.addEventListener('click', (event) => {
+  const { target } = event;
+
+  if (target.classList.contains('operator')) {
+    calculator.handleOperator(target.value);
+  } else if (target.classList.contains('decimal')) {
+    calculator.inputDecimal(target.value);
+  } else if (target.classList.contains('all-clear')) {
+    calculator.resetCalculator (target.value);
+  } else if (target.classList.contains('delete')) {
+    calculator.deleteValue(target.value);
+    calculator.updateDisplay();
+  } else if (target.classList.contains('digit')) {
+    calculator.inputDigit(target.value);
+  } else if (target.classList.contains('sqrt')) {
+    calculator.findSQRT(target.value);
   }
-
-  updateDisplay();
-  
-  const keys = document.querySelector('.calculator-keys');
-  keys.addEventListener('click', (event) => {
-    const { target } = event;
-    if (!target.matches('button')) {
-      return;
-    }
-
-    if (target.classList.contains('operator')) {
-      handleOperator(target.value);
-      updateDisplay();
-      return;
-    }
-
-    if (target.classList.contains('decimal')) {
-      inputDecimal(target.value);
-      updateDisplay();
-      return;
-    }
-
-    if (target.classList.contains('all-clear')) {
-      resetCalculator (target.value);
-      updateDisplay();
-      return;
-    }
-
-    if (target.classList.contains('delete')) {
-      deleteValue(target.value);
-      updateDisplay();
-      return;
-    }
-    
-    inputDigit(target.value);
-    updateDisplay();
-  });
+  console.log(calculator);
+  calculator.updateDisplay();
+});
