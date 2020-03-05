@@ -1,96 +1,91 @@
 const calculator = {
   displayValue: '0',
-  firstOperand: null,
-  waitingForSecondOperand: false,
-  operator: null,
+  operators: ['+', '-', '/', '%', '*', '^', 'sqrt'],
+  currentOperator: null,
 
   inputDigit(digit) {
-    const { displayValue, waitingForSecondOperand } = this;
-    if (waitingForSecondOperand === true) {
-      this.displayValue = digit;
-      this.waitingForSecondOperand = false;
-    }
-    else {
-      this.displayValue = displayValue === '0'
-        ? digit 
-        : displayValue + digit;
+    const { displayValue } = this;
+    this.displayValue = displayValue === '0'
+      ? digit
+      : displayValue + digit;
+  },
+
+  inputDot() {
+    const { displayValue, currentOperator } = this;
+
+    const lastNumber = displayValue.split(currentOperator).reverse()[0];
+
+    if (!lastNumber.includes('.')) {
+      if (displayValue.slice(-1).match(/\d$/g)) {
+        this.displayValue += '.'
+      } else {
+        this.displayValue += '0.'
+      }
     }
   },
-  inputDecimal(dot) {
-    if (this.waitingForSecondOperand === true) return;
-    if (!this.displayValue.includes(dot)) {
-      this.displayValue += dot;
+
+  handleOperator(operator) {
+    const { displayValue, operators } = this;
+
+    if (!operators.includes(displayValue.slice(-1))) {
+      if (displayValue.slice(-1).match(/\.$/g)) {
+        this.displayValue = displayValue.slice(0, -1) + operator;
+      } else {
+        this.displayValue += operator;
+      }
+      this.currentOperator = operator;
+    } else {
+      this.displayValue = displayValue.slice(0, -1) + operator;
     }
   },
-  handleOperator(nextOperator) {
-    const {firstOperand, displayValue, operator} = this;
-    const inputValue = parseFloat(displayValue);
-  
-    if (operator && this.waitingForSecondOperand) {
-      this.operator = nextOperator;
-      return;
-    }
-      
-    if (firstOperand == null) {
-      this.firstOperand = inputValue;
-    } else if (operator) {
-      const result = performCalculation[operator](firstOperand, inputValue);
-      this.displayValue = String(result);
-      this.firstOperand = result;
-    }
-  
-    this.waitingForSecondOperand = true;
-    this.operator = nextOperator;
-  },
+
   resetCalculator() {
     calculator.displayValue = '0';
     calculator.firstOperand = null;
     calculator.waitingForSecondOperand = false;
     calculator.operator = null;
   },
+
   updateDisplay() {
     const display = document.querySelector('.calculator-screen');
     display.value = calculator.displayValue;
   },
+
   deleteValue() {
     const input = document.querySelector('.calculator-screen');
     calculator.displayValue = input.value.slice(0,-1);
   },
+
   findSQRT() {
     const input = document.querySelector('.calculator-screen');
     calculator.displayValue = Math.sqrt(input.value);
   },
+
+  calculateResult() {
+    const { displayValue } = this;
+    this.displayValue = String(eval(displayValue));
+  }
 };
 
-const performCalculation = {
-  '/': (firstOperand, secondOperand) => firstOperand / secondOperand,
-  '*': (firstOperand, secondOperand) => firstOperand * secondOperand,
-  '-': (firstOperand, secondOperand) => firstOperand - secondOperand,
-  '+': (firstOperand, secondOperand) => firstOperand + secondOperand,
-  '=': (_, secondOperand) => secondOperand,
-  "^": (firstOperand, secondOperand) => Math.pow(firstOperand, secondOperand),
-  "sqrt": (firstOperand) => Math.sqrt(firstOperand),
-  "%": (firstOperand, secondOperand) => (firstOperand)/100 * secondOperand,
-}; 
-
 const keys = document.querySelector('.calculator-keys');
+
 keys.addEventListener('click', (event) => {
   const { target } = event;
 
   if (target.classList.contains('operator')) {
     calculator.handleOperator(target.value);
   } else if (target.classList.contains('decimal')) {
-    calculator.inputDecimal(target.value);
+    calculator.inputDot();
   } else if (target.classList.contains('all-clear')) {
     calculator.resetCalculator (target.value);
   } else if (target.classList.contains('delete')) {
     calculator.deleteValue(target.value);
-    calculator.updateDisplay();
   } else if (target.classList.contains('digit')) {
     calculator.inputDigit(target.value);
-  } else if (target.classList.contains('sqrt')) {
-    calculator.findSQRT(target.value);
+  } else if (target.classList.contains('equal-sign')) {
+    calculator.calculateResult();
   }
+
   console.log(calculator);
   calculator.updateDisplay();
 });
